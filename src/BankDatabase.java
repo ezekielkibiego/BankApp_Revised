@@ -1,19 +1,32 @@
-import java.sql.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Properties;
 
 public class BankDatabase {
     private Connection connection;
 
     public BankDatabase() {
-        try {
-            String url = "jdbc:postgresql://localhost:5432/banking_db";
-            String user = "ezekiel";
-            String password = "Kibiego22@";
+        Properties properties = new Properties();
+        try (InputStream input = new FileInputStream("config.properties")) {
+            properties.load(input);
+
+            String url = properties.getProperty("db.url");
+            String user = properties.getProperty("db.user");
+            String password = properties.getProperty("db.password");
+
             connection = DriverManager.getConnection(url, user, password);
             connection.setAutoCommit(false);
-        } catch (SQLException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public void createAccount(String accountNumber) throws SQLException {
         System.out.println("Creating account: " + accountNumber);
